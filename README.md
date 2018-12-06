@@ -1,5 +1,5 @@
 # pyvee
-A python wrapper for vee api
+A python wrapper for vee api. For more detail specification, please click [here](https://github.com/excelsia/pyvee/wiki)
 
 ## Install
 For now, 
