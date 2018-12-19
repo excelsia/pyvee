@@ -397,6 +397,11 @@ class Account(object):
             return resp
 
     def check_tx(self, tx_id, confirmations=0):
+        """Confirm tx on chain.
+        Return True if Transaction is fully confirmed.
+        Return False if Transaction is sent but not confirmed.
+        Return None if Transaction does not exist!
+        """
         res = self.chain.tx(tx_id)
         if res.get("status") == "Success":
             tx_height = res["height"]
