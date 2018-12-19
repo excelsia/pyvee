@@ -395,3 +395,11 @@ class Account(object):
             if isinstance(resp, list) and type_filter:
                 resp = [tx for tx in resp[0] if tx['type'] == type_filter]
             return resp
+
+    def check_node(self, other_node_host=None):
+        if other_node_host:
+            res = self.chain.check_with_other_node(other_node_host)
+        else:
+            res = self.chain.self_check()
+        # add more check if need
+        return res
