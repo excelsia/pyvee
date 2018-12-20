@@ -399,7 +399,7 @@ class Account(object):
     def check_tx(self, tx_id, confirmations=0):
         """Confirm tx on chain.
         Return True if Transaction is fully confirmed.
-        Return False if Transaction is sent but not confirmed.
+        Return False if Transaction is sent but not confirmed or failed.
         Return None if Transaction does not exist!
         """
         utx_res = self.chain.unconfirmed_tx(tx_id)
@@ -415,11 +415,16 @@ class Account(object):
                     logging.debug("Transaction {} is fully confirmed.".format(tx_id))
                     return True
                 else:
-                    logging.debug("Transaction {} is sent but not fully confirmed.".format(tx_id))
+                    logging.info("Transaction {} is sent but not fully confirmed.".format(tx_id))
                     return False
-            else:
-                logging.error("Transaction does not exist!\nTX: {}\nUTX: {}".format(tx_res, utx_res))
+            elif "id" not in tx_res:
+                logging.error("Transaction does not exist!")
+                logging.debug("Tx API response: {}".format(tx_res))
                 return None
+            else:
+                logging.error("Transaction failed to process!")
+                logging.debug("Tx API response: {}".format(tx_res))
+                return False
 
     def check_node(self, other_node_host=None):
         if other_node_host:
