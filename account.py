@@ -402,27 +402,23 @@ class Account(object):
         Return False if Transaction is sent but not confirmed.
         Return None if Transaction does not exist!
         """
-        res = self.chain.tx(tx_id)
-        if res.get("status") == "Success":
-            tx_height = res["height"]
-            cur_height = self.chain.height()
-            if cur_height >= tx_height + confirmations:
-                logging.debug("Transaction {} is fully confirmed.".format(tx_id))
-                return True
-            else:
-                logging.debug("Transaction {} is sent but not fully confirmed.".format(tx_id))
-                return False
+        utx_res = self.chain.unconfirmed_tx(tx_id)
+        if "id" in utx_res:
+            logging.error("Transaction {} is pending in UTX pool.".format(tx_id))
+            return False
         else:
-            if res.get("details"):
-                logging.error("Fail to confirm Transaction {}: {}".format(tx_id, res["details"]))
+            tx_res = self.chain.tx(tx_id)
+            if tx_res.get("status") == "Success":
+                tx_height = tx_res["height"]
+                cur_height = self.chain.height()
+                if cur_height >= tx_height + confirmations:
+                    logging.debug("Transaction {} is fully confirmed.".format(tx_id))
+                    return True
+                else:
+                    logging.debug("Transaction {} is sent but not fully confirmed.".format(tx_id))
+                    return False
             else:
-                logging.error("Get response: {}".format(res))
-            res = self.chain.unconfirmed_tx(tx_id)
-            if "id" in res:
-                logging.error("Transaction {} is pending in UTX.".format(tx_id))
-                return False
-            else:
-                logging.error("Transaction does not exist! Get response: {}".format(res))
+                logging.error("Transaction does not exist!\nTX: {}\nUTX: {}".format(tx_res, utx_res))
                 return None
 
     def check_node(self, other_node_host=None):
