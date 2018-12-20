@@ -74,6 +74,9 @@ class Chain(object):
     def tx(self, id):
         return self.api_wrapper.request('/transactions/info/%s' % id)
 
+    def unconfirmed_tx(self, id):
+        return self.api_wrapper.request('/transactions/unconfirmed/info/%s' % id)
+
     def slot_info(self, slot_id):
         return self.api_wrapper.request('/consensus/slotInfo/%s' % slot_id)
 
